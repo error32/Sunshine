@@ -1,0 +1,59 @@
+#include <SoftwareSerial.h>
+int photocellPinUV = A0;    //resistance solaire
+int photocellPinnoUV = A1;    //resistance solaire SANS UV
+int buzzer = 9;      // buzzer trop d'exposition
+int sensorValueUV = 0;  // valeur pinUV
+int sensorValuenoUV = 0;  // valeur pinnoUV
+int mappedValue = 0; //need for some reasons
+int mappedValuenoUV = 0; //need for some reasons noUV
+int maxSun = 0; //valeur total de soleil reçu pendant qe l'appareil est allumé
+unsigned long time;
+
+void setup() {
+  // declare the buzzer as an OUTPUT:
+  pinMode(buzzer, OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  // read the value from the sensor:
+  sensorValueUV = analogRead(photocellPinUV);
+  sensorValuenoUV = analogRead(photocellPinnoUV);
+  mappedValue = map(sensorValueUV,0,1023,0,150);
+  mappedValuenoUV = map(sensorValuenoUV,0,1023,0,150);
+  Serial.print(" and sensorValueUV= ");
+  Serial.print(sensorValueUV);
+  
+    Serial.print(" and sensorValuenoUV= ");
+  Serial.print(sensorValuenoUV);
+  
+  Serial.print(" and mappedValue= ");
+  Serial.println(mappedValue);
+  
+    Serial.print(" and mappedValuenoUV= ");
+  Serial.println(mappedValuenoUV);
+  
+  Serial.print("maxSun= ");
+  Serial.print(maxSun);
+  
+  Serial.print(" and Time: ");
+  time = millis();
+
+  Serial.println(time);
+  Serial.print(time);
+
+  delay(1000);
+ 
+  maxSun= maxSun+mappedValue-mappedValuenoUV;
+  if (maxSun > 500){
+     analogWrite(buzzer, HIGH);
+     delay(200);
+     analogWrite(buzzer, LOW);
+ }
+  else {
+    
+    analogWrite(buzzer, LOW);
+    
+   // analogWrite(buzzer, mappedValue);
+  }
+}
